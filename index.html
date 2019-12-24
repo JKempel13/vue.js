@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v="http://www.w3.org/1999/xhtml"
+      xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Learning Vue.js</title>
+    <link rel="stylesheet" href="css/vue.css" type="text/css">
+</head>
+<body>
+<div class="nav-bar"></div>
+
+<div id="app">
+    <div class="product">
+
+        <div class="product-image">
+            <img v-bind:src="image" alt="logo">
+        </div>
+
+        <div class="product-info">
+            <h1>Product: {{ product }}</h1>
+            <p v-if="inventory > 10">In Stock</p>
+            <p v-else :class="{ outOfStock: !inStock }">Out Of Stock</p>
+            <p>Details:</p>
+            <ul>
+                <li v-for="detail in details">{{ detail }}</li>
+            </ul>
+            <p>Sizes:</p>
+            <ul>
+                <li v-for="size in sizes">{{ size }}</li>
+            </ul>
+
+            <p>Variations:</p>
+
+            <div v-for="variant in variants" :key="variant.variantId" class="color-box" :style="{ backgroundColor: variant.variantColor }" @mouseover="updateProduct(variant.variantImage)">
+            </div>
+
+            <p v-else-if="inventory <= 10 && inventory > 0">Almost Sold Out!</p>
+            <p v-show="onSale">Item On Sale!</p>
+
+            <button v-on:click="addToCart" :disabled="!inStock"
+                    :class="{ disabledButton: !inStock }">Add to Cart</button>
+            <button v-on:click="removeFromCart">Remove from Cart</button>
+
+            <div class="cart">
+                <p>Cart({{cart}})</p>
+            </div>
+            <div>
+                <a :href="link" target="_blank">View More Products Like This</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
