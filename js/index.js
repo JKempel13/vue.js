@@ -1,3 +1,21 @@
+Vue.component ('product-details', {
+    props: {
+        details: {
+            type: Array,
+            required: true
+        }
+    },
+        template: `
+            <ul>
+                <li v-for="detail in details">{{ detail }}</li>
+            </ul>
+            <h5 class="sizes">Sizes:</h5>
+            <ul>
+                <li v-for="size in sizes">{{ size }}</li>
+            </ul>
+        `
+});
+
 Vue.component ('product', {
     props: {
         premium: {
@@ -19,14 +37,8 @@ Vue.component ('product', {
             <p>{{ sale }}</p>
             <p>Shipping: {{ shipping }}</p>
             <h5 class="details">Details:</h5>
-            <ul>
-                <li v-for="detail in details">{{ detail }}</li>
-            </ul>
-            <h5 class="sizes">Sizes:</h5>
-            <ul>
-                <li v-for="size in sizes">{{ size }}</li>
-            </ul>
 
+            <product-details :details="details"></product-details>
             <p>Variations:</p>
 
             <div v-for="(variant, index) in variants" :key="variant.variantId" class="color-box" :style="{ backgroundColor: variant.variantColor }" @mouseover="updateProduct(index)">
@@ -37,10 +49,6 @@ Vue.component ('product', {
             <button v-bind:title="message" v-on:click="addToCart" :disabled="!inStock"
                     :class="{ disabledButton: !inStock }">Add to Cart</button>
             <button v-on:click="removeFromCart">Remove from Cart</button>
-
-            <div class="cart">
-                <p>Cart({{cart}})</p>
-            </div>
             <div>
                 <a :href="link" target="_blank">View More Products Like This</a>
             </div>
@@ -72,21 +80,20 @@ Vue.component ('product', {
                 }
             ],
             sizes: ["XS","S","M","L","XL"],
-            cart: 0,
             onSale: true
         }
     },
 
     methods: {
         addToCart: function() {
-            this.cart += 1
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId)
         },
         updateProduct: function(index) {
             this.selectedVariant = index;
             console.log(index)
         },
         removeFromCart: function () {
-            this.cart -= 1
+            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId)
         },
         reverseBrand: function () {
             this.brand = this.brand.split('').reverse().join('')
@@ -121,6 +128,19 @@ Vue.component ('product', {
 let app = new Vue({
     el: '#app',
     data: {
-        premium: true
+        cart: [],
+        premium: false
+    },
+    methods: {
+        updateCart (id) {
+            this.cart.push(id)
+        },
+        dropFromCart (id) {
+            for(var i = this.cart.length - 1; i >= 0; i--) {
+                if (this.cart[i] === id) {
+                    this.cart.splice(i, 1);
+                }
+            }
+        }
     }
 });
